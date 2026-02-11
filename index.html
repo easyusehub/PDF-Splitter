@@ -1,53 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free PDF Split Tool Online | EasyUseHub</title>
-  <meta name="description" content="Split your PDF files into individual pages online with EasyUseHub. Free, fast, and mobile-friendly PDF Splitter tool.">
-  <meta name="keywords" content="PDF Split, Split PDF Online, Free PDF Splitter, Online PDF Tools">
-  <meta name="robots" content="index, follow">
-  <style>
-    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
-    .container { max-width: 800px; margin: auto; padding: 20px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h1 { color: #333; text-align: center; margin-bottom: 10px; }
-    p { color: #555; line-height: 1.6; text-align: center; }
-    .tool-section { margin-top: 30px; text-align: center; }
-    .btn { display: inline-block; padding: 12px 25px; margin: 10px 5px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px; transition: background 0.3s; }
-    .btn:hover { background: #0056b3; }
-    input[type=file] { margin: 10px 0; padding: 5px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free PDF Split Tool Online | EasyUseHub</title>
+<meta name="description" content="Split your PDF files into individual pages online with EasyUseHub. Free, fast, and mobile-friendly PDF Splitter tool.">
+<meta name="keywords" content="PDF Split, Split PDF Online, Free PDF Splitter, EasyUseHub">
+<meta name="robots" content="index, follow">
+<style>
+  body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+  .container { max-width: 800px; margin: auto; padding: 20px; background: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  h1 { color: #333; text-align: center; margin-bottom: 10px; }
+  p { color: #555; line-height: 1.6; text-align: center; }
+  .tool-section { margin-top: 30px; text-align: center; }
+  .btn { display: inline-block; padding: 12px 25px; margin: 10px 5px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px; transition: background 0.3s; }
+  .btn:hover { background: #0056b3; }
+  input[type=file] { margin: 10px 0; padding: 5px; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Free PDF Split Tool Online</h1>
-    <p>Easily split your PDF files into individual pages online using EasyUseHub. Fast, free, and mobile-friendly. No registration required.</p>
 
-    <div class="tool-section">
-      <h2>Upload Your PDF</h2>
-      <form id="pdfSplitForm">
-        <input type="file" id="pdfFile" accept="application/pdf" required>
-        <br>
-        <button type="submit" class="btn">Split PDF</button>
-      </form>
-    </div>
+<div class="container">
+<h1>Free PDF Split Tool Online</h1>
+<p>Easily split your PDF files into individual pages online using EasyUseHub. Fast, free, and mobile-friendly. No registration required.</p>
 
-    <div class="tool-section">
-      <p>After uploading, select the pages you want to extract and download your new PDF instantly.</p>
-    </div>
+<div class="tool-section">
+<h2>Upload Your PDF</h2>
+<input type="file" id="pdfFile" accept="application/pdf">
+<button class="btn" id="splitBtn">Split PDF</button>
+</div>
 
-    <div class="tool-section">
-      <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="btn">PDF TOOL HOME</a>
-      <a href="https://easyusehub.blogspot.com/" class="btn">Easyusehub Home</a>
-    </div>
-  </div>
+<div class="tool-section" id="downloadLinks"></div>
 
-  <script>
-    document.getElementById('pdfSplitForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('PDF splitting functionality will be implemented here.');
-      // Later: integrate PDF JS or server-side split logic
-    });
-  </script>
+<div class="tool-section">
+<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1" class="btn">PDF TOOL HOME</a>
+<a href="https://easyusehub.blogspot.com/" class="btn">EasyUseHub Home</a>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+const splitBtn = document.getElementById('splitBtn');
+const fileInput = document.getElementById('pdfFile');
+const downloadLinks = document.getElementById('downloadLinks');
+
+splitBtn.addEventListener('click', async () => {
+  downloadLinks.innerHTML = '';
+  const file = fileInput.files[0];
+  if(!file){ alert('Please select a PDF file'); return; }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+
+  for(let i=0; i < pdfDoc.getPageCount(); i++){
+    const newPdf = await PDFLib.PDFDocument.create();
+    const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
+    newPdf.addPage(copiedPage);
+    const pdfBytes = await newPdf.save();
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([pdfBytes], {type:'application/pdf'}));
+    link.download = `page-${i+1}.pdf`;
+    link.textContent = `Download Page ${i+1}`;
+    link.className = 'btn';
+    downloadLinks.appendChild(link);
+  }
+});
+</script>
+
 </body>
 </html>
