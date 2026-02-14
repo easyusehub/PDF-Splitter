@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Split Tool | EasyUseHub</title>
+<meta name="description" content="Split PDF files into individual pages online. Free and secure PDF Split tool by EasyUseHub.">
+<style>
+body{font-family:Arial;background:#f4f6f8;margin:0}
+.box{max-width:700px;margin:30px auto;background:#fff;padding:20px;border-radius:6px}
+h1{text-align:center}
+button{padding:10px 20px;background:#2563eb;color:#fff;border:0;border-radius:5px;cursor:pointer}
+a{display:block;margin:8px 0;color:#2563eb;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h1>PDF Split Tool</h1>
+
+<input type="file" id="file" accept="application/pdf">
+<br><br>
+<button onclick="splitPDF()">Split PDF</button>
+
+<div id="output"></div>
+
+<br>
+<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html?m=1">← Back to PDF Tools</a>
+</div>
+
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+<script>
+async function splitPDF(){
+  const fileInput = document.getElementById('file');
+  const output = document.getElementById('output');
+  output.innerHTML = '';
+
+  if(!fileInput.files.length){
+    alert("Please select a PDF");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const bytes = await file.arrayBuffer();
+  const pdfDoc = await PDFLib.PDFDocument.load(bytes);
+
+  for(let i=0;i<pdfDoc.getPageCount();i++){
+    const newPdf = await PDFLib.PDFDocument.create();
+    const [page] = await newPdf.copyPages(pdfDoc,[i]);
+    newPdf.addPage(page);
+
+    const pdfBytes = await newPdf.save();
+    const blob = new Blob([pdfBytes],{type:'application/pdf'});
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `page-${i+1}.pdf`;
+    link.textContent = `Download Page ${i+1}`;
+    output.appendChild(link);
+  }
+}
+</script>
+
+</body>
+</html>
