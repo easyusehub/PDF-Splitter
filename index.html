@@ -1,128 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Split PDF Online – Free PDF Split Tool | EasyUseHub</title>
-  <meta name="description" content="Split PDF files online for free up to 15 MB. EasyUseHub PDF Split tool works directly in your browser. No upload, no signup required.">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>PDF Split Tool Online – EasyUseHub</title>
+<meta name="description" content="Split PDF files online up to 15 MB. Free PDF splitter tool by EasyUseHub. Works directly in your browser.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://easyusehub.github.io/PDF-Splitter/">
+<meta name="robots" content="index, follow">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-      text-align: center;
-    }
-    .tool-box {
-      background: #fff;
-      padding: 25px;
-      max-width: 500px;
-      margin: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      margin-bottom: 10px;
-    }
-    input[type="file"] {
-      margin: 15px 0;
-    }
-    button {
-      padding: 10px 25px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
-    .warning {
-      color: red;
-      font-weight: bold;
-      display: none;
-      margin-top: 10px;
-    }
-    .note {
-      font-size: 14px;
-      color: #555;
-      margin-top: 15px;
-    }
-    .seo {
-      margin-top: 40px;
-      text-align: left;
-    }
-  </style>
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0;padding:0}
+nav{background:#222;padding:10px 15px;text-align:left}
+nav a{color:#fff;text-decoration:none;font-weight:bold}
+.box{background:#fff;padding:20px;max-width:500px;margin:20px auto;border-radius:8px;text-align:center}
+button{padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer}
+button:disabled{background:#aaa}
+.warning{color:red;font-weight:bold;display:none}
+.note{font-size:14px;color:#555;margin-top:15px}
+.seo{margin-top:40px;text-align:left}
+footer{margin-top:40px;text-align:center;font-size:14px}
+footer a{color:#007bff;text-decoration:none}
+.breadcrumb{margin:10px 0;font-size:14px}
+.breadcrumb a{text-decoration:none;color:#007bff}
+</style>
 </head>
 
 <body>
 
-  <div class="tool-box">
-    <h1>Split PDF Online</h1>
-    <p>Select a PDF file to split. Maximum allowed size: <b>15 MB</b></p>
+<!-- Navigation -->
+<nav>
+  <a href="https://easyusehub.blogspot.com/">EasyUseHub Home</a>
+</nav>
 
-    <input type="file" id="pdfFile" accept="application/pdf">
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="https://easyusehub.blogspot.com/">Home</a> ›
+  <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html">PDF Tools</a> ›
+  <span>PDF Split</span>
+</div>
 
-    <p id="fileWarning" class="warning">
-      ⚠️ File size too large! Please upload a PDF under 15 MB.
-    </p>
+<div class="box">
+<h1>PDF Split Tool</h1>
+<p>Upload PDF (Max 15 MB)</p>
 
-    <br>
-    <button id="splitBtn" disabled>Split PDF</button>
+<input type="file" id="pdfFile" accept="application/pdf"><br><br>
 
-    <p class="note">
-      📌 This tool works directly in your browser.  
-      Large files may not work properly on mobile devices.
-    </p>
-  </div>
+<label>Split from page:</label><br>
+<input type="number" id="fromPage" min="1" value="1"><br><br>
 
-  <!-- SEO CONTENT -->
-  <div class="seo">
-    <h2>How to Use PDF Split Tool</h2>
-    <p>Upload your PDF file (up to 15 MB) and split pages easily using EasyUseHub's free PDF Split tool.</p>
+<label>To page:</label><br>
+<input type="number" id="toPage" min="1" value="1"><br><br>
 
-    <h2>Why Use EasyUseHub PDF Splitter?</h2>
-    <ul>
-      <li>100% free to use</li>
-      <li>No file upload to server</li>
-      <li>Fast and secure</li>
-      <li>Works on mobile and desktop</li>
-    </ul>
-  </div>
+<p class="warning" id="warn">⚠️ File must be under 15 MB</p>
 
-  <script>
-    const fileInput = document.getElementById("pdfFile");
-    const warning = document.getElementById("fileWarning");
-    const splitBtn = document.getElementById("splitBtn");
+<button id="splitBtn" disabled>Split PDF</button>
 
-    const MAX_SIZE = 15 * 1024 * 1024; // 15 MB
+<p class="note">
+📌 This tool works directly in your browser.<br>
+Large files may not work properly on mobile devices.
+</p>
+</div>
 
-    fileInput.addEventListener("change", function () {
-      const file = this.files[0];
+<!-- SEO Content -->
+<div class="seo">
+<h2>How to Use PDF Split Tool</h2>
+<p>Upload your PDF file (up to 15 MB) and split pages easily using EasyUseHub's free PDF Split tool.</p>
 
-      if (!file) {
-        splitBtn.disabled = true;
-        warning.style.display = "none";
-        return;
-      }
+<h2>Why Use EasyUseHub PDF Splitter?</h2>
+<ul>
+<li>100% free to use</li>
+<li>No file upload to server</li>
+<li>Fast and secure</li>
+<li>Works on mobile and desktop</li>
+</ul>
+</div>
 
-      if (file.size > MAX_SIZE) {
-        warning.style.display = "block";
-        splitBtn.disabled = true;
-        this.value = "";
-      } else {
-        warning.style.display = "none";
-        splitBtn.disabled = false;
-      }
-    });
+<!-- Footer -->
+<footer>
+<p>
+© EasyUseHub | 
+<a href="https://easyusehub.blogspot.com/">Home</a> |
+<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html">All PDF Tools</a>
+</p>
+</footer>
 
-    // Placeholder (actual split logic can be added later)
-    splitBtn.addEventListener("click", function () {
-      alert("PDF split feature will process the file here.");
-    });
-  </script>
+<!-- JavaScript -->
+<script>
+const fileInput=document.getElementById("pdfFile");
+const splitBtn=document.getElementById("splitBtn");
+const warn=document.getElementById("warn");
+const MAX=15*1024*1024;
+
+fileInput.addEventListener("change",()=>{
+  const f=fileInput.files[0];
+  if(!f){splitBtn.disabled=true;return;}
+  if(f.size>MAX){
+    warn.style.display="block";
+    splitBtn.disabled=true;
+    fileInput.value="";
+  }else{
+    warn.style.display="none";
+    splitBtn.disabled=false;
+  }
+});
+
+splitBtn.onclick=async ()=>{
+  const file=fileInput.files[0];
+  const from=parseInt(fromPage.value);
+  const to=parseInt(toPage.value);
+  const bytes=await file.arrayBuffer();
+  const pdf=await PDFLib.PDFDocument.load(bytes);
+  const newPdf=await PDFLib.PDFDocument.create();
+  const pages=await newPdf.copyPages(pdf, Array.from({length:to-from+1},(_,i)=>from-1+i));
+  pages.forEach(p=>newPdf.addPage(p));
+  const out=await newPdf.save();
+  const blob=new Blob([out],{type:"application/pdf"});
+  const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download="split.pdf";
+  link.click();
+};
+</script>
 
 </body>
 </html>
