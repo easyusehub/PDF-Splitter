@@ -2,71 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PDF Split Tool Online – EasyUseHub</title>
-<meta name="description" content="Split PDF files online up to 15 MB. Free PDF splitter tool by EasyUseHub. Works directly in your browser.">
+<title>PDF Auto Split – EasyUseHub</title>
+<meta name="description" content="Split PDF into individual pages automatically. Each page gets its own download button. Free tool by EasyUseHub. Max 15 MB.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="canonical" href="https://easyusehub.github.io/PDF-Splitter/">
-<meta name="robots" content="index, follow">
-
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0;padding:0}
-nav{background:#222;padding:10px 15px;text-align:left}
-nav a{color:#fff;text-decoration:none;font-weight:bold}
+body{font-family:Arial;background:#f4f4f4;margin:0;padding:0;text-align:center}
+nav{background:#222;padding:10px 15px;text-align:center}
+nav a{color:#fff;text-decoration:none;font-weight:bold;margin:0 10px}
 .box{background:#fff;padding:20px;max-width:500px;margin:20px auto;border-radius:8px;text-align:center}
-button{padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer}
+button{padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer;margin:5px;}
 button:disabled{background:#aaa}
-.warning{color:red;font-weight:bold;display:none}
+.warning{color:red;font-weight:bold;display:none;margin:10px 0}
 .note{font-size:14px;color:#555;margin-top:15px}
-.seo{margin-top:40px;text-align:left}
-footer{margin-top:40px;text-align:center;font-size:14px}
-footer a{color:#007bff;text-decoration:none}
-.breadcrumb{margin:10px 0;font-size:14px}
-.breadcrumb a{text-decoration:none;color:#007bff}
+.page-buttons{margin-top:20px;text-align:center}
+.page-buttons a{display:block;margin:5px;color:#007bff;text-decoration:none;font-weight:bold}
 </style>
 </head>
-
 <body>
 
 <!-- Navigation -->
 <nav>
-  <a href="https://easyusehub.blogspot.com/">EasyUseHub Home</a>
+  <a href="https://easyusehub.blogspot.com/">Home</a>
+  <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html">All PDF Tools</a>
 </nav>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-  <a href="https://easyusehub.blogspot.com/">Home</a> ›
-  <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html">PDF Tools</a> ›
-  <span>PDF Split</span>
-</div>
-
 <div class="box">
-<h1>PDF Split Tool</h1>
-<p>Upload PDF (Max 15 MB)</p>
+<h1>PDF Auto Split Tool</h1>
+<p>Upload PDF (Max 15 MB) and get each page download button automatically</p>
 
 <input type="file" id="pdfFile" accept="application/pdf"><br><br>
 
-<label>Split from page:</label><br>
-<input type="number" id="fromPage" min="1" value="1"><br><br>
-
-<label>To page:</label><br>
-<input type="number" id="toPage" min="1" value="1"><br><br>
-
 <p class="warning" id="warn">⚠️ File must be under 15 MB</p>
 
-<button id="splitBtn" disabled>Split PDF</button>
+<div class="page-buttons" id="pageButtons"></div>
 
 <p class="note">
-📌 This tool works directly in your browser.<br>
-Large files may not work properly on mobile devices.
+📌 Works in browser. Large PDFs may be slow or fail on mobile.
 </p>
 </div>
 
 <!-- SEO Content -->
-<div class="seo">
+<div class="seo" style="max-width:500px;margin:auto;text-align:left">
 <h2>How to Use PDF Split Tool</h2>
-<p>Upload your PDF file (up to 15 MB) and split pages easily using EasyUseHub's free PDF Split tool.</p>
+<p>Upload your PDF file (up to 15 MB) and split pages automatically using EasyUseHub's free PDF Split tool.</p>
 
 <h2>Why Use EasyUseHub PDF Splitter?</h2>
 <ul>
@@ -78,50 +57,52 @@ Large files may not work properly on mobile devices.
 </div>
 
 <!-- Footer -->
-<footer>
+<footer style="margin-top:40px;text-align:center;font-size:14px">
 <p>
 © EasyUseHub | 
-<a href="https://easyusehub.blogspot.com/">Home</a> |
+<a href="https://easyusehub.blogspot.com/">Home</a> | 
 <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-easyusehub.html">All PDF Tools</a>
 </p>
 </footer>
 
-<!-- JavaScript -->
 <script>
 const fileInput=document.getElementById("pdfFile");
-const splitBtn=document.getElementById("splitBtn");
 const warn=document.getElementById("warn");
 const MAX=15*1024*1024;
+const pageButtons=document.getElementById("pageButtons");
 
-fileInput.addEventListener("change",()=>{
+fileInput.addEventListener("change",async ()=>{
+  pageButtons.innerHTML=""; // clear old buttons
   const f=fileInput.files[0];
-  if(!f){splitBtn.disabled=true;return;}
+  if(!f) return;
   if(f.size>MAX){
     warn.style.display="block";
-    splitBtn.disabled=true;
     fileInput.value="";
+    return;
   }else{
     warn.style.display="none";
-    splitBtn.disabled=false;
+  }
+
+  // Load PDF
+  const bytes=await f.arrayBuffer();
+  const pdf=await PDFLib.PDFDocument.load(bytes);
+  const totalPages=pdf.getPageCount();
+
+  for(let i=0;i<totalPages;i++){
+    const newPdf=await PDFLib.PDFDocument.create();
+    const [page]=await newPdf.copyPages(pdf,[i]);
+    newPdf.addPage(page);
+    const pdfBytes=await newPdf.save();
+    const blob=new Blob([pdfBytes],{type:"application/pdf"});
+    const url=URL.createObjectURL(blob);
+
+    const link=document.createElement("a");
+    link.href=url;
+    link.download=`page-${i+1}.pdf`;
+    link.textContent=`Download Page ${i+1}`;
+    pageButtons.appendChild(link);
   }
 });
-
-splitBtn.onclick=async ()=>{
-  const file=fileInput.files[0];
-  const from=parseInt(fromPage.value);
-  const to=parseInt(toPage.value);
-  const bytes=await file.arrayBuffer();
-  const pdf=await PDFLib.PDFDocument.load(bytes);
-  const newPdf=await PDFLib.PDFDocument.create();
-  const pages=await newPdf.copyPages(pdf, Array.from({length:to-from+1},(_,i)=>from-1+i));
-  pages.forEach(p=>newPdf.addPage(p));
-  const out=await newPdf.save();
-  const blob=new Blob([out],{type:"application/pdf"});
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download="split.pdf";
-  link.click();
-};
 </script>
 
 </body>
