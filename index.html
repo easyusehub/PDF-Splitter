@@ -3,79 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <title>PDF Split Free– EasyUseHub</title>
-<meta name="description" content="Split PDF into individual pages automatically. Each page gets its own download button. Free tool by EasyUseHub. Max 15 MB.">
+<meta name="description" content="Split PDF into individual pages automatically. Each page gets its own download button. Free tool by EasyUseHub. Max 20 MB.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0;padding:0;text-align:center}
-nav{background:#222;padding:10px 15px;text-align:center}
-nav a{color:#fff;text-decoration:none;font-weight:bold;margin:0 10px;font-size:18px}
-.box{background:#fff;padding:20px;max-width:600px;margin:20px auto;border-radius:8px;text-align:center;box-shadow:0 0 10px rgba(0,0,0,0.1)}
-button{padding:12px 25px;background:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer;margin:10px;font-size:16px}
-button:disabled{background:#aaa}
-.warning{color:red;font-weight:bold;display:none;margin:10px 0}
-.note{font-size:14px;color:#555;margin-top:15px}
-.page-buttons{margin-top:20px;text-align:center}
-.page-buttons a{display:block;margin:5px;color:#007bff;text-decoration:none;font-weight:bold;font-size:16px}
-.bottom-buttons{margin-top:30px}
-.bottom-buttons a{display:inline-block;padding:15px 25px;background:#28a745;color:#fff;text-decoration:none;font-weight:bold;margin:5px;border-radius:6px;font-size:18px}
-.bottom-buttons a:hover{background:#218838}
+body{font-family:Arial, sans-serif; background:#f4f4f4; margin:0; padding:0; text-align:center; position: relative; overflow-x: hidden;}
+header{background:#fff; padding:15px; box-shadow:0 2px 5px rgba(0,0,0,.1);}
+.container{width:90%; max-width:900px; margin:30px auto;}
+
+/* In-Page Push Ad Style */
+#push-notification {
+    position: fixed;
+    bottom: -150px; 
+    right: 20px;
+    width: 300px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    z-index: 10000;
+    transition: bottom 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    cursor: pointer;
+    border-left: 5px solid #2563eb;
+    color: #333;
+}
+#push-notification.active { bottom: 20px; }
+#push-notification img { width: 50px; height: 50px; border-radius: 8px; margin-right: 12px; }
+.push-text { text-align: left; flex: 1; }
+.push-text b { font-size: 14px; color: #222; display: block; }
+.push-text p { font-size: 12px; color: #666; margin: 3px 0 0 0; }
+.close-push { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #aaa; cursor: pointer; }
+
+/* Custom Ad Banner Style */
+.custom-ad-bridge {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    text-align: center;
+}
+.custom-ad-bridge:hover { transform: scale(1.02); }
+.ad-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; display: block; }
+.ad-desc { font-size: 14px; margin-bottom: 10px; display: block; opacity: 0.9; }
+.ad-btn { background: #fbbf24; color: #000; padding: 8px 20px; border-radius: 5px; font-weight: bold; text-transform: uppercase; display: inline-block; margin-top: 10px; }
+
+.box{background:#fff; padding:30px; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.1); margin-bottom: 20px;}
+input[type=file]{padding:12px; font-size:16px; margin:15px 0; border: 1px solid #ddd; border-radius:6px; width: 80%;}
+button{padding:15px 30px; background:#2563eb; color:#fff; border:none; border-radius:6px; cursor:pointer; margin:10px; font-size:18px; font-weight: bold;}
+button:disabled{background:#aaa; cursor: not-allowed;}
+.warning{color:red; font-weight:bold; display:none; margin:10px 0;}
+
+.page-buttons{margin-top:20px; text-align:center;}
+.page-buttons a{display:block; margin:10px auto; color:#fff; background:#333; text-decoration:none; font-weight:bold; font-size:16px; padding: 12px; border-radius: 8px; max-width: 300px; transition: 0.3s;}
+.page-buttons a:hover{background:#2563eb;}
+
+.bottom-nav-btns{margin-top:30px; padding-bottom: 20px;}
+.bottom-nav-btns a{display:inline-block; padding:15px 25px; background:#6b7280; color:#fff; text-decoration:none; font-weight:bold; margin:5px; border-radius:6px; font-size:18px;}
+.bottom-nav-btns a.all-tools{background:#10b981;}
 </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav>
-  PDF Split Tool – EasyUseHub
-</nav>
-
-<div class="box">
-<h1>PDF Split</h1>
-<p>Upload PDF (Max 15 MB) and click <b>Split PDF</b> to automatically create download buttons for each page.</p>
-
-<input type="file" id="pdfFile" accept="application/pdf"><br><br>
-
-<p class="warning" id="warn">⚠️ File must be under 15 MB</p>
-
-<button id="splitBtn" disabled>Split PDF</button>
-
-<div class="page-buttons" id="pageButtons"></div>
-
-<p class="note">
-📌 Works in browser. Large PDFs may be slow or fail on mobile.
-</p>
+<div id="push-notification" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+    <span class="close-push" onclick="event.stopPropagation(); document.getElementById('push-notification').classList.remove('active');">&times;</span>
+    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="icon">
+    <div class="push-text">
+        <b>🚀 46+ Pro Tools Ready!</b>
+        <p>ALL PDF TOOLS, Calculators & more at EasyUseHub.</p>
+    </div>
 </div>
 
-<!-- Bottom Buttons -->
-<div class="bottom-buttons">
-<a href="https://easyusehub.blogspot.com/">Home</a>
-<a href="https://easyusehub.blogspot.com/p/free-pdf-tools-online.html">All PDF Tools</a>
-</div>
+<header>
+  <h2>PDF Split Tool – EasyUseHub</h2>
+</header>
 
-<!-- SEO Content -->
-<div class="seo" style="max-width:600px;margin:auto;text-align:left">
-<h2>How to Use PDF Split Tool</h2>
-<p>Upload your PDF file (up to 15 MB) and click the <b>Split PDF</b> button. Each page will get an individual download button automatically.</p>
+<div class="container">
+  
+  <div class="custom-ad-bridge" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+      <span class="ad-title">🚀 Try 46+ Premium Free Web Tools!</span>
+      <span class="ad-desc">All PDF TOOLS, 16+ calculator, Age Calculator, BMI Tracker, Loan EMI etc - 100% Free</span>
+      <div class="ad-btn">Open EasyUseHub</div>
+  </div>
 
-<h2>Why Use EasyUseHub PDF Splitter?</h2>
-<ul>
-<li>100% free to use</li>
-<li>No file upload to server</li>
-<li>Fast and secure</li>
-<li>Works on mobile and desktop</li>
-</ul>
+  <div class="box">
+    <h1>PDF Split</h1>
+    <p>Upload PDF (Max 20 MB) to automatically create download buttons for each page.</p>
+
+    <input type="file" id="pdfFile" accept="application/pdf"><br>
+    <p class="warning" id="warn">⚠️ File must be under 20 MB</p>
+    <button id="splitBtn" disabled>Split PDF</button>
+
+    <div id="statusText" style="margin: 15px 0; color: #2563eb; font-weight: bold;"></div>
+    
+    <div class="page-buttons" id="pageButtons"></div>
+  </div>
+
+  <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #059669, #10b981);" onclick="window.open('https://easyusehub.blogspot.com/p/image-compressor.html', '_blank')">
+      <span class="ad-title">⚡ High-Speed Image Compressor</span>
+      <span class="ad-desc">Compress your images without losing quality at EasyUseHub</span>
+      <div class="ad-btn" style="background: #fff; color: #059669;">Try Now</div>
+  </div>
+
+  <div class="custom-ad-bridge" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
+      <span class="ad-title">🔢 Smart Online Calculators</span>
+      <span class="ad-desc">Loan EMI, Age Calculator, BMI Tracker, and Tax Calculators at your fingertips.</span>
+      <div class="ad-btn" style="background: #000; color: #fff;">Open Calculators</div>
+  </div>
+
+  <div class="bottom-nav-btns">
+    <a href="https://easyusehub.blogspot.com/">🏠 Home</a>
+    <a href="https://easyusehub.blogspot.com/p/free-pdf-tools-online.html" class="all-tools">📚 All PDF Tools</a>
+  </div>
+
 </div>
 
 <script>
 const fileInput=document.getElementById("pdfFile");
 const splitBtn=document.getElementById("splitBtn");
 const warn=document.getElementById("warn");
-const MAX=15*1024*1024;
 const pageButtons=document.getElementById("pageButtons");
+const statusText=document.getElementById("statusText");
+const MAX=20*1024*1024; // লিমিট ২০ এমবি করা হয়েছে
 
 fileInput.addEventListener("change",()=>{
   pageButtons.innerHTML="";
+  statusText.innerText = "";
   const f=fileInput.files[0];
   if(!f){splitBtn.disabled=true;return;}
   if(f.size>MAX){
@@ -89,29 +148,50 @@ fileInput.addEventListener("change",()=>{
 });
 
 splitBtn.addEventListener("click", async ()=>{
-  pageButtons.innerHTML=""; // clear old
+  pageButtons.innerHTML=""; 
+  statusText.innerText = "🔄 Splitting PDF... Please wait.";
+  splitBtn.disabled = true;
+  
   const f=fileInput.files[0];
   if(!f) return;
-  const bytes = await f.arrayBuffer();
-  const pdf = await PDFLib.PDFDocument.load(bytes);
-  const totalPages = pdf.getPageCount();
 
-  for(let i=0;i<totalPages;i++){
-    const newPdf=await PDFLib.PDFDocument.create();
-    const [page]=await newPdf.copyPages(pdf,[i]);
-    newPdf.addPage(page);
-    const pdfBytes=await newPdf.save();
-    const blob=new Blob([pdfBytes],{type:"application/pdf"});
-    const url=URL.createObjectURL(blob);
+  // কনভার্ট শুরু হলে পুশ অ্যাড দেখাবে
+  setTimeout(() => { document.getElementById('push-notification').classList.add('active'); }, 1000);
 
-    const link=document.createElement("a");
-    link.href=url;
-    link.download=`page-${i+1}.pdf`;
-    link.textContent=`Download Page ${i+1}`;
-    pageButtons.appendChild(link);
+  try {
+    const bytes = await f.arrayBuffer();
+    const pdf = await PDFLib.PDFDocument.load(bytes);
+    const totalPages = pdf.getPageCount();
+
+    for(let i=0;i<totalPages;i++){
+      const newPdf=await PDFLib.PDFDocument.create();
+      const [page]=await newPdf.copyPages(pdf,[i]);
+      newPdf.addPage(page);
+      const pdfBytes=await newPdf.save();
+      const blob=new Blob([pdfBytes],{type:"application/pdf"});
+      const url=URL.createObjectURL(blob);
+
+      const link=document.createElement("a");
+      link.href=url;
+      link.download=`EasyUseHub-page-${i+1}.pdf`;
+      link.textContent=`⬇️ Download Page ${i+1}`;
+      pageButtons.appendChild(link);
+    }
+    statusText.innerText = "✨ PDF Split Complete!";
+  } catch (err) {
+    statusText.innerText = "❌ Error splitting PDF.";
+    console.error(err);
+  } finally {
+    splitBtn.disabled = false;
   }
 });
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
